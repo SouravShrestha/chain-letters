@@ -62,15 +62,6 @@ jobs:
           command: deploy --env test
           wranglerVersion: '3'
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-          name: open-next-build
-          path: .open-next
-          retention-days: 7
-          if-no-files-found: error
-          include-hidden-files: true
-
   release-please:
     needs: ci
     runs-on: ubuntu-latest
