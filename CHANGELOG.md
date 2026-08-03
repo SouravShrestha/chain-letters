@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/SouravShrestha/chain-letters/compare/chain-letters-v1.1.5...chain-letters-v1.2.0) (2026-08-03)
+
+
+### Features
+
+* update app icons ([db0e4b6](https://github.com/SouravShrestha/chain-letters/commit/db0e4b6d4928cff2254daf2bec78bc97148f51a5))
+
 ## [1.1.5](https://github.com/SouravShrestha/chain-letters/compare/chain-letters-v1.1.4...chain-letters-v1.1.5) (2026-07-26)
 
 
