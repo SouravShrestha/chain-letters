@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/SouravShrestha/chain-letters/compare/chain-letters-v1.2.0...chain-letters-v1.2.1) (2026-08-12)
+
+
+### Bug Fixes
+
+* prevent race conditions in round scoring and phase transitions ([eb34175](https://github.com/SouravShrestha/chain-letters/commit/eb3417559bd12922cc723beb5729cd996d42fd62))
+
 ## [1.2.0](https://github.com/SouravShrestha/chain-letters/compare/chain-letters-v1.1.5...chain-letters-v1.2.0) (2026-08-03)
 
 
