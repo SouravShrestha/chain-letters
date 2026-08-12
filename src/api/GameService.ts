@@ -22,6 +22,12 @@ export class GameService {
     const session = await this.sessions.findById(sessionId);
     if (!session) throw new Error("Session not found");
 
+    // Guard against concurrent callers (e.g. both clients' checkTimeout,
+    // plus submit-word's own inline timeout branch, racing on the same
+    // deadline). If the session has already left "round", another
+    // concurrent call already ended this round — do nothing.
+    if (session.phase !== "round") return;
+
     const host_score = winner === "host" ? session.host_score + 1 : session.host_score;
     const guest_score = winner === "guest" ? session.guest_score + 1 : session.guest_score;
 
@@ -43,8 +49,15 @@ export class GameService {
       guest_score >= majority ||
       (roundsPlayed >= target && host_score !== guest_score);
 
-    await this.sessions.update(sessionId, {
-      phase: "round_result",
+    // Single atomic write, conditioned on the session still being in
+    // "round". If another concurrent call already flipped the phase away
+    // from "round" (e.g. a racing checkTimeout call from the other
+    // client), this becomes a no-op instead of double-scoring. Writing
+    // the final phase (round_result or match_summary) in this one update
+    // also avoids the earlier two-step write where a concurrent
+    // next-round call could clobber a pending match_summary transition.
+    await this.sessions.updateIfPhase(sessionId, "round", {
+      phase: done ? "match_summary" : "round_result",
       host_score,
       guest_score,
       last_result: { winner, reason, word },
@@ -52,10 +65,6 @@ export class GameService {
       current_turn: null,
       turn_ends_at: null,
     });
-
-    if (done) {
-      await this.sessions.update(sessionId, { phase: "match_summary" });
-    }
   }
 
   async recordTimeout(session: Session) {

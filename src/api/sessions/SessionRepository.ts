@@ -47,6 +47,23 @@ export class SessionRepository implements ISessionRepository {
     if (error) throw new Error(error.message);
   }
 
+  async updateIfPhase(
+    id: string,
+    expectedPhase: Session["phase"],
+    data: Partial<Session>,
+  ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload = { ...data, updated_at: new Date().toISOString() } as any;
+    const { data: rows, error } = await getSupabaseAdmin()
+      .from("sessions")
+      .update(payload)
+      .eq("id", id)
+      .eq("phase", expectedPhase)
+      .select("id");
+    if (error) throw new Error(error.message);
+    return (rows?.length ?? 0) > 0;
+  }
+
   async delete(id: string): Promise<void> {
     const { error } = await getSupabaseAdmin().from("sessions").delete().eq("id", id);
     if (error) throw new Error(error.message);
