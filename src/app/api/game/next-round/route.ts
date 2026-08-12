@@ -21,7 +21,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not ready for next round" }, { status: 409 });
     }
 
-    await sessionRepo.update(sessionId, {
+    // Conditioned on phase still being "round_result" so a duplicate
+    // trigger (e.g. RoundResultView's countdown effect firing twice)
+    // can't double-increment current_round.
+    await sessionRepo.updateIfPhase(sessionId, "round_result", {
       phase: "letter_pick",
       current_round: session.current_round + 1,
       start_letter: null,

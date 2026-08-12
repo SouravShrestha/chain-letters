@@ -46,7 +46,10 @@ export async function POST(request: Request) {
       // Add a 1.5 second grace period to allow clients to receive the event and render the round screen
       const endsAt = new Date(Date.now() + (session.turn_seconds + 1.5) * 1000).toISOString();
 
-      await sessionRepo.update(sessionId, {
+      // Conditioned on phase still being "letter_pick" in case both
+      // players' submit-letter requests land concurrently after the
+      // second pick is recorded.
+      await sessionRepo.updateIfPhase(sessionId, "letter_pick", {
         phase: "round",
         start_letter: startLetter,
         end_letter: endLetter,
